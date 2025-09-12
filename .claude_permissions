@@ -1,0 +1,20 @@
+{
+  "allowed_tools": [
+    "Write",
+    "Edit", 
+    "MultiEdit",
+    "Read",
+    "Bash",
+    "TodoWrite", 
+    "Glob",
+    "Grep",
+    "mcp__ide__executeCode",
+    "WebSearch",
+    "WebFetch"
+  ],
+  "auto_approve": true,
+  "restrictions": {
+    "no_system_changes": true,
+    "project_folder_only": true
+  }
+}
