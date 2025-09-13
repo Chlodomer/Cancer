@@ -1,163 +1,86 @@
-# Interactive Epidemic Simulator
+# Cancer Biology Educational Game
 
-A web-based educational tool demonstrating disease spread dynamics using the SIR (Susceptible-Infected-Recovered) epidemiological model. Perfect for medical students learning epidemiology and public health concepts.
+An interactive educational simulation based on the Hanahan & Weinberg "Hallmarks of Cancer: The Next Generation" framework, designed to teach students about tumor evolution and therapeutic resistance mechanisms.
 
-## Features
+## Overview
 
-🦠 **Real-time Simulation**
-- Interactive SIR mathematical model
-- Spatial visualization of disease spread
-- Animated population grid with individual tracking
+This comprehensive cancer biology game allows students to experience the complexity of cancer therapeutics through a realistic simulation of tumor evolution, adaptive resistance, and metastatic progression.
 
-📊 **Data Visualization**
-- Real-time epidemic curves
-- Population state tracking (S, I, R)
-- Key metrics display (R₀, attack rate, peak infections)
+## Key Features
 
-🎛️ **Interactive Controls**
-- Adjustable parameters (transmission rate, recovery rate, population size)
-- Disease scenario presets (Flu, COVID-19, Measles)
-- Play/pause/reset functionality
+### 🧬 Comprehensive Hallmark System
+- **6 Core Hallmarks**: Sustaining proliferation, evading growth suppressors, resisting cell death, enabling replicative immortality, inducing angiogenesis, activating invasion & metastasis
+- **2 Emerging Hallmarks**: Reprogramming energy metabolism, evading immune destruction
+- **2 Enabling Characteristics**: Genome instability & mutation, tumor-promoting inflammation
 
-📚 **Educational Content**
-- Built-in explanations of key epidemiological concepts
-- Real-time metric calculations
-- Mathematical formulas with current values
+### 🔬 Advanced Biological Modeling
+- **Tumor Microenvironment**: Cancer-associated fibroblasts (CAFs), tumor-associated macrophages (TAMs), T-cells, pericytes, ECM density
+- **Cancer Stem Cells**: Dynamic CSC percentage tracking with stemness-mediated resistance
+- **Metabolism & Resources**: Glucose utilization, oxygen levels, lactate production
 
-## Quick Start
+### 💊 Comprehensive Drug Library
+20+ therapeutic agents across multiple classes:
+- Targeted therapies (EGFR, HER2, BRAF inhibitors)
+- Immunotherapies (checkpoint inhibitors, CAR-T)
+- Anti-angiogenic agents
+- Chemotherapy and hormone therapy
+- Novel agents targeting stem cells and metabolism
 
-1. **Run Locally**:
-   ```bash
-   python3 -m http.server 8000
-   ```
-   Then open http://localhost:8000 in your browser
+### 🧪 Advanced Resistance Mechanisms
+- **Pathway Redundancy**: Compensatory pathway activation
+- **Adaptive Resistance**: Dynamic resistance based on previous treatments
+- **Microenvironment-Mediated**: Resistance from stromal interactions
+- **Cancer Stem Cell Enrichment**: Selection pressure effects
+- **Compensatory Switching**: Anti-angiogenic therapy leading to invasion
 
-2. **Basic Usage**:
-   - Click "Start" to begin the simulation
-   - Adjust sliders to modify disease parameters
-   - Try preset scenarios for different diseases
-   - Use spacebar to play/pause, 'R' to reset
-
-## Understanding the Model
-
-### SIR Model Equations
-- **dS/dt = -βSI/N** (Susceptible individuals become infected)
-- **dI/dt = βSI/N - γI** (Infected individuals recover)
-- **dR/dt = γI** (Recovered individuals gain immunity)
-
-### Key Parameters
-- **β (Beta)**: Transmission rate - how easily the disease spreads
-- **γ (Gamma)**: Recovery rate - how quickly people recover
-- **R₀**: Basic reproduction number = β/γ (epidemic threshold)
-
-### Disease Presets
-- **Seasonal Flu**: Moderate transmission, faster recovery
-- **COVID-19**: High transmission, slower recovery
-- **Measles**: Very high transmission, moderate recovery
+### 🌐 Multi-Site Metastasis Tracking
+- Real-time progression across 6 metastatic sites per tumor type
+- Dynamic risk assessment and burden tracking
+- Invasion hallmark-dependent metastatic evolution
 
 ## Educational Objectives
 
-Students will learn to:
-- Understand mathematical modeling of infectious diseases
-- Visualize the impact of public health interventions
-- Explore concepts of herd immunity and epidemic curves
-- Develop intuition for epidemiological decision-making
+Students learn to:
+- Understand tumor heterogeneity and evolution
+- Predict resistance mechanisms based on hallmark interactions
+- Design rational combination therapies
+- Apply systems thinking to cancer treatment
+- Recognize the complexity of clinical decision-making
+
+## How to Use
+
+1. Open `game.html` in a web browser
+2. Review the randomized tumor profile with active hallmarks
+3. Select therapeutic agents based on biological rationale
+4. Observe tumor evolution and resistance development
+5. Adapt treatment strategies across 3 rounds
+6. Review performance feedback and learning points
 
 ## Technical Implementation
 
-**Frontend Stack**:
-- Vanilla HTML5, CSS3, JavaScript (ES6+)
-- Canvas API for visualizations
-- No external dependencies for educational transparency
+Built with vanilla HTML, CSS, and JavaScript for maximum compatibility and educational accessibility. The simulation incorporates:
 
-**Key Classes**:
-- `EpidemicSimulator`: Core mathematical model and simulation logic
-- `PopulationVisualizer`: Animated spatial visualization
-- `ChartVisualizer`: Real-time epidemic curve plotting
-- `EpidemicApp`: Main application controller and UI management
+- Realistic tumor profiles based on common cancer types
+- Evidence-based drug mechanisms and resistance patterns
+- Dynamic UI updates reflecting biological changes
+- Comprehensive scoring based on therapeutic reasoning
 
-## Browser Compatibility
+## Academic Foundation
 
-Works in all modern browsers:
-- Chrome/Chromium 60+
-- Firefox 55+
-- Safari 10+
-- Edge 79+
+Based on seminal cancer biology literature:
+- Hanahan D, Weinberg RA. Hallmarks of cancer: the next generation. Cell. 2011;144(5):646-674
+- Current understanding of therapeutic resistance mechanisms
+- Clinical oncology treatment paradigms
 
-## Advanced Features
+## Usage
 
-**Hidden Shortcuts**:
-- Spacebar: Toggle simulation
-- 'R' key: Reset simulation
-- Console command: `exportSimulationData()` - Export simulation data as JSON
-
-**Responsive Design**:
-- Desktop: Full multi-panel layout
-- Tablet: Stacked panels
-- Mobile: Single-column with tabs
-
-## Customization
-
-The simulator can be easily extended:
-
-1. **Add New Disease Presets**:
-   ```javascript
-   // In simulator.js, EpidemicSimulator.getPreset()
-   newDisease: {
-       transmissionRate: 0.6,
-       recoveryRate: 0.08,
-       name: "New Disease"
-   }
-   ```
-
-2. **Modify Visual Styling**:
-   - Edit `styles.css` for UI appearance
-   - Adjust colors in `visualization.js`
-
-3. **Extend Mathematical Model**:
-   - Add SEIR model (with Exposed state)
-   - Include vaccination parameters
-   - Implement age-structured populations
-
-## Educational Use Cases
-
-**Classroom Scenarios**:
-1. **Basic Epidemiology**: Start with simple flu parameters, demonstrate R₀ concept
-2. **Intervention Effects**: Show how reducing transmission rate simulates social distancing
-3. **Herd Immunity**: Experiment with different population sizes and recovery rates
-4. **Comparative Analysis**: Use presets to compare different diseases
-
-**Assessment Ideas**:
-- Predict peak infection timing for given parameters
-- Calculate herd immunity thresholds
-- Explain the relationship between R₀ and epidemic growth
-- Design intervention strategies to minimize total infections
-
-## File Structure
-
-```
-├── index.html          # Main HTML structure
-├── styles.css          # UI styling and responsive design
-├── simulator.js        # SIR mathematical model and Individual class
-├── visualization.js    # Canvas-based visualization components
-├── app.js             # Main application controller
-├── README.md          # Documentation (this file)
-└── epidemic-simulator-prd.md  # Detailed project requirements
-```
-
-## Contributing
-
-This project demonstrates "vibe coding" for medical education - combining rigorous mathematical modeling with engaging interactive visualization. The code prioritizes:
-
-- **Educational Clarity**: Well-commented, readable code structure
-- **Mathematical Accuracy**: Proper implementation of epidemiological models
-- **Visual Engagement**: Smooth animations and intuitive interactions
-- **Extensibility**: Modular design for easy enhancement
-
-## License
-
-Educational use encouraged. Perfect for medical schools, public health programs, and STEM education.
+Designed for:
+- Medical school oncology courses
+- Graduate cancer biology programs
+- Continuing medical education
+- Research training programs
+- Self-directed learning
 
 ---
 
-*Built with ❤️ for medical education • Demonstrates programming skills applicable to medical informatics*
+*This educational tool provides a realistic simulation of cancer complexity while maintaining pedagogical clarity for learning objectives.*
