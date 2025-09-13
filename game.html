@@ -1,0 +1,1731 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Adaptive Resistance Scenario Workshop</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #4a5568 0%, #2d3748 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            font-size: 1.1em;
+            opacity: 0.9;
+        }
+
+        .round-indicator {
+            background: rgba(255,255,255,0.1);
+            padding: 10px 20px;
+            border-radius: 30px;
+            display: inline-block;
+            margin-top: 15px;
+            font-weight: bold;
+        }
+
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            padding: 30px;
+        }
+
+        .tumor-profile {
+            background: #f7fafc;
+            border-radius: 15px;
+            padding: 25px;
+        }
+
+        .section-title {
+            font-size: 1.3em;
+            color: #2d3748;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #e2e8f0;
+            padding-bottom: 10px;
+        }
+
+        .hallmark-grid {
+            display: grid;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .hallmark-item {
+            background: white;
+            padding: 15px;
+            border-radius: 10px;
+            border-left: 4px solid #4299e1;
+            transition: all 0.3s ease;
+        }
+
+        .hallmark-item.active {
+            border-left-color: #f56565;
+            background: #fff5f5;
+        }
+
+        .hallmark-item.suppressed {
+            border-left-color: #48bb78;
+            background: #f0fff4;
+            opacity: 0.7;
+        }
+
+        .hallmark-item.emerging {
+            border-left-color: #ed8936;
+            background: #fffdf7;
+            animation: pulse 2s infinite;
+        }
+        
+        .hallmark-item.enabling {
+            border-left-color: #805ad5;
+            background: #faf5ff;
+        }
+        
+        .hallmark-item.core {
+            border-left-color: #4299e1;
+            background: #ebf8ff;
+        }
+        
+        .hallmark-item.metabolic {
+            border-left-color: #38a169;
+            background: #f0fff4;
+        }
+        
+        .hallmark-item.resistance {
+            border-left-color: #e53e3e;
+            background: #fed7d7;
+            font-weight: bold;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.02); }
+        }
+
+        .hallmark-name {
+            font-weight: bold;
+            color: #2d3748;
+            margin-bottom: 5px;
+        }
+
+        .hallmark-severity {
+            display: flex;
+            gap: 5px;
+            margin-top: 10px;
+        }
+
+        .severity-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: #e2e8f0;
+        }
+
+        .severity-dot.filled {
+            background: #f56565;
+        }
+
+        .tumor-info {
+            background: white;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+
+        .info-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+        }
+
+        .info-label {
+            color: #718096;
+            font-weight: 500;
+        }
+
+        .info-value {
+            color: #2d3748;
+            font-weight: bold;
+        }
+
+        .therapeutic-panel {
+            background: #f7fafc;
+            border-radius: 15px;
+            padding: 25px;
+        }
+
+        .drug-options {
+            display: grid;
+            gap: 15px;
+            margin-bottom: 20px;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .drug-card {
+            background: white;
+            padding: 15px;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+        }
+
+        .drug-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        .drug-card.selected {
+            border-color: #4299e1;
+            background: #ebf8ff;
+        }
+
+        .drug-name {
+            font-weight: bold;
+            color: #2d3748;
+            margin-bottom: 5px;
+        }
+
+        .drug-target {
+            color: #718096;
+            font-size: 0.9em;
+            margin-bottom: 5px;
+        }
+
+        .drug-class {
+            display: inline-block;
+            background: #edf2f7;
+            padding: 3px 8px;
+            border-radius: 5px;
+            font-size: 0.85em;
+            color: #4a5568;
+        }
+
+        .rationale-section {
+            margin-top: 20px;
+        }
+
+        .rationale-textarea {
+            width: 100%;
+            min-height: 120px;
+            padding: 15px;
+            border: 2px solid #e2e8f0;
+            border-radius: 10px;
+            font-size: 1em;
+            font-family: inherit;
+            resize: vertical;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .btn {
+            padding: 12px 30px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1em;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-primary:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .btn-secondary {
+            background: #edf2f7;
+            color: #4a5568;
+        }
+
+        .response-panel {
+            grid-column: 1 / -1;
+            background: #fef5e7;
+            border-radius: 15px;
+            padding: 25px;
+            margin-top: 20px;
+            display: none;
+        }
+
+        .response-panel.show {
+            display: block;
+            animation: slideIn 0.5s ease;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .response-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .clinical-response {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+        }
+
+        .response-type {
+            font-size: 1.2em;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .response-type.complete { color: #38a169; }
+        .response-type.partial { color: #48bb78; }
+        .response-type.stable { color: #ed8936; }
+        .response-type.progressive { color: #f56565; }
+
+        .resistance-risk {
+            border: 2px solid #fed7d7 !important;
+            background: #fffafa !important;
+        }
+
+        .resistance-warning {
+            color: #e53e3e;
+            font-weight: bold;
+            font-size: 0.85em;
+            margin-top: 5px;
+        }
+
+        .evolution-details {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+        }
+
+        .evolution-item {
+            margin-bottom: 15px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .evolution-item:last-child {
+            border-bottom: none;
+        }
+
+        .evolution-label {
+            font-weight: bold;
+            color: #2d3748;
+            margin-bottom: 5px;
+        }
+
+        .evolution-description {
+            color: #718096;
+            font-size: 0.95em;
+            line-height: 1.5;
+        }
+
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .metric-card {
+            background: white;
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+        }
+
+        .metric-value {
+            font-size: 1.8em;
+            font-weight: bold;
+            color: #2d3748;
+        }
+
+        .metric-label {
+            color: #718096;
+            font-size: 0.9em;
+            margin-top: 5px;
+        }
+
+        .intro-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.8);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+
+        .modal-content {
+            background: white;
+            padding: 40px;
+            border-radius: 20px;
+            max-width: 600px;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        .modal-content h2 {
+            color: #2d3748;
+            margin-bottom: 20px;
+        }
+
+        .modal-content p {
+            color: #4a5568;
+            line-height: 1.6;
+            margin-bottom: 15px;
+        }
+
+        .modal-content ul {
+            margin-left: 20px;
+            margin-bottom: 20px;
+        }
+
+        .modal-content li {
+            color: #4a5568;
+            line-height: 1.6;
+            margin-bottom: 8px;
+        }
+
+        .completion-screen {
+            grid-column: 1 / -1;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 40px;
+            border-radius: 15px;
+            text-align: center;
+            display: none;
+        }
+
+        .completion-screen.show {
+            display: block;
+        }
+
+        .completion-screen h2 {
+            font-size: 2em;
+            margin-bottom: 20px;
+        }
+
+        .final-score {
+            font-size: 3em;
+            margin: 20px 0;
+        }
+
+        .feedback-summary {
+            background: rgba(255,255,255,0.1);
+            padding: 20px;
+            border-radius: 10px;
+            margin-top: 20px;
+            text-align: left;
+        }
+
+        .metastasis-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .metastasis-site {
+            background: #f7fafc;
+            border-radius: 10px;
+            padding: 15px;
+            border: 2px solid #e2e8f0;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .metastasis-site.active {
+            background: #fff5f5;
+            border-color: #feb2b2;
+        }
+
+        .metastasis-site.developing {
+            background: #fffbeb;
+            border-color: #fed7aa;
+        }
+
+        .site-name {
+            font-weight: bold;
+            color: #2d3748;
+            margin-bottom: 5px;
+        }
+
+        .site-status {
+            font-size: 0.9em;
+            margin-bottom: 5px;
+        }
+
+        .site-status.clear { color: #38a169; }
+        .site-status.developing { color: #ed8936; }
+        .site-status.active { color: #e53e3e; }
+
+        .site-burden {
+            font-size: 0.8em;
+            color: #718096;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Adaptive Resistance Scenario Workshop</h1>
+            <p>Understanding Tumor Evolution & Therapeutic Resistance</p>
+            <div class="round-indicator" id="roundIndicator">Round 1 of 3: Initial Assessment</div>
+        </div>
+
+        <div id="introModal" class="intro-modal">
+            <div class="modal-content">
+                <h2>Welcome to the Adaptive Resistance Workshop</h2>
+                <p><strong>Learning Objectives:</strong></p>
+                <ul>
+                    <li>Understand how tumors adapt to therapeutic pressure</li>
+                    <li>Predict resistance mechanisms based on hallmark interactions</li>
+                    <li>Design rational combination therapies</li>
+                    <li>Apply systems thinking to cancer treatment</li>
+                </ul>
+                <p><strong>How it works:</strong></p>
+                <p>You'll guide treatment decisions through 3 rounds, observing how the tumor evolves and adapts to your therapeutic choices. Each decision impacts the tumor's response and shapes future treatment options.</p>
+                <p>Pay attention to hallmark interdependencies and microenvironment changes as you progress.</p>
+                <button class="btn btn-primary" onclick="startWorkshop()">Begin Workshop</button>
+            </div>
+        </div>
+
+        <div class="main-content" id="mainContent" style="display: none;">
+            <div class="tumor-profile">
+                <h2 class="section-title">Tumor Profile</h2>
+                
+                <div class="tumor-info">
+                    <div class="info-row">
+                        <span class="info-label">Tissue Origin:</span>
+                        <span class="info-value" id="tissueOrigin">Lung Adenocarcinoma</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">Stage:</span>
+                        <span class="info-value" id="tumorStage">IIIB</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">Key Mutations:</span>
+                        <span class="info-value" id="keyMutations">KRAS G12C, TP53</span>
+                    </div>
+                </div>
+
+                <h3 style="margin: 20px 0 15px; color: #2d3748;">Core Hallmarks</h3>
+                <div class="hallmark-grid" id="coreHallmarkGrid">
+                    <!-- Core hallmarks will be dynamically inserted here -->
+                </div>
+                
+                <h3 style="margin: 20px 0 15px; color: #2d3748;">Emerging Hallmarks</h3>
+                <div class="hallmark-grid" id="emergingHallmarkGrid">
+                    <!-- Emerging hallmarks will be dynamically inserted here -->
+                </div>
+                
+                <h3 style="margin: 20px 0 15px; color: #2d3748;">Enabling Characteristics</h3>
+                <div class="hallmark-grid" id="enablingGrid">
+                    <!-- Enabling characteristics will be dynamically inserted here -->
+                </div>
+
+                <div class="metrics-grid">
+                    <div class="metric-card">
+                        <div class="metric-value" id="tumorBurden">85</div>
+                        <div class="metric-label">Tumor Burden</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-value" id="metastaticPotential">45</div>
+                        <div class="metric-label">Metastatic Potential</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-value" id="cscPercentage">15</div>
+                        <div class="metric-label">Cancer Stem Cells (%)</div>
+                    </div>
+                </div>
+                
+                <h3 style="margin: 20px 0 15px; color: #2d3748;">Metastatic Sites</h3>
+                <div class="metastasis-grid" id="metastasisGrid">
+                    <!-- Metastatic sites will be dynamically inserted here -->
+                </div>
+                
+                <h3 style="margin: 20px 0 15px; color: #2d3748;">Metabolism & Resources</h3>
+                <div class="metrics-grid">
+                    <div class="metric-card">
+                        <div class="metric-value" id="glucose">85</div>
+                        <div class="metric-label">Glucose Uptake</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-value" id="oxygen">45</div>
+                        <div class="metric-label">Oxygen Levels</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-value" id="lactate">60</div>
+                        <div class="metric-label">Lactate Production</div>
+                    </div>
+                </div>
+                
+                <h3 style="margin: 20px 0 15px; color: #2d3748;">Tumor Microenvironment</h3>
+                <div class="metrics-grid">
+                    <div class="metric-card">
+                        <div class="metric-value" id="cafs">40</div>
+                        <div class="metric-label">CAFs</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-value" id="tams">30</div>
+                        <div class="metric-label">TAMs</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-value" id="tcells">20</div>
+                        <div class="metric-label">T-cells</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="therapeutic-panel">
+                <h2 class="section-title">Therapeutic Options</h2>
+                
+                <div class="drug-options" id="drugOptions">
+                    <!-- Drug options will be dynamically inserted here -->
+                </div>
+
+                <div class="rationale-section">
+                    <h3 style="margin-bottom: 10px; color: #2d3748;">Treatment Rationale</h3>
+                    <textarea 
+                        id="rationaleInput"
+                        class="rationale-textarea" 
+                        placeholder="Explain your therapeutic strategy and why you selected this approach based on the tumor profile..."
+                    ></textarea>
+                </div>
+
+                <div class="action-buttons">
+                    <button class="btn btn-primary" id="submitBtn" onclick="submitDecision()" disabled>
+                        Submit Treatment Decision
+                    </button>
+                    <button class="btn btn-secondary" onclick="requestHint()">
+                        Request Hint
+                    </button>
+                </div>
+            </div>
+
+            <div class="response-panel" id="responsePanel">
+                <h2 class="section-title">Tumor Response</h2>
+                <div class="response-content">
+                    <div class="clinical-response">
+                        <div class="response-type" id="responseType">Partial Response</div>
+                        <p id="responseDescription"></p>
+                    </div>
+                    <div class="evolution-details">
+                        <div class="evolution-label">Observed Adaptations:</div>
+                        <div id="evolutionList"></div>
+                    </div>
+                </div>
+                <button class="btn btn-primary" onclick="proceedToNextRound()" style="margin-top: 20px;">
+                    Continue to Next Round
+                </button>
+            </div>
+
+            <div class="completion-screen" id="completionScreen">
+                <h2>Workshop Complete!</h2>
+                <div class="final-score" id="finalScore">82%</div>
+                <p>Strategic Thinking Score</p>
+                <div class="feedback-summary" id="feedbackSummary">
+                    <!-- Final feedback will be inserted here -->
+                </div>
+                <button class="btn btn-primary" onclick="exportResults()" style="margin-top: 20px;">
+                    Export Results
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Game state
+        let gameState = {
+            currentRound: 1,
+            selectedDrugs: [],
+            tumorProfile: {},
+            decisions: [],
+            score: 0
+        };
+
+        // Enhanced tumor profiles with complete hallmark system
+        const tumorProfiles = [
+            {
+                tissue: "Lung Adenocarcinoma",
+                stage: "IIIB",
+                mutations: "KRAS G12C, TP53",
+                metabolism: { glucose: 85, oxygen: 45, lactate: 60 },
+                cscPercentage: 15,
+                hallmarks: [
+                    { name: "Sustaining Proliferative Signaling", severity: 4, id: "proliferation", type: "core" },
+                    { name: "Evading Growth Suppressors", severity: 3, id: "growth_suppressors", type: "core" },
+                    { name: "Inducing Angiogenesis", severity: 4, id: "angiogenesis", type: "core" },
+                    { name: "Resisting Cell Death", severity: 2, id: "apoptosis", type: "core" },
+                    { name: "Enabling Replicative Immortality", severity: 3, id: "immortality", type: "core" },
+                    { name: "Activating Invasion & Metastasis", severity: 2, id: "invasion", type: "core" }
+                ],
+                emergingHallmarks: [
+                    { name: "Reprogramming Energy Metabolism", severity: 3, id: "metabolism", type: "emerging" },
+                    { name: "Evading Immune Destruction", severity: 2, id: "immune_evasion", type: "emerging" }
+                ],
+                enablingCharacteristics: [
+                    { name: "Genome Instability & Mutation", severity: 4, id: "genome_instability", type: "enabling" },
+                    { name: "Tumor-Promoting Inflammation", severity: 3, id: "inflammation", type: "enabling" }
+                ],
+                microenvironment: {
+                    cafs: 40, // Cancer-associated fibroblasts
+                    tams: 30, // Tumor-associated macrophages  
+                    pericytes: 25,
+                    tcells: 20,
+                    ecm: 60 // Extracellular matrix density
+                },
+                metastases: [
+                    { site: "Liver", status: "clear", burden: 0, risk: 40 },
+                    { site: "Bone", status: "clear", burden: 0, risk: 30 },
+                    { site: "Brain", status: "clear", burden: 0, risk: 20 },
+                    { site: "Lymph Nodes", status: "developing", burden: 15, risk: 70 },
+                    { site: "Pleura", status: "clear", burden: 0, risk: 50 },
+                    { site: "Adrenal", status: "clear", burden: 0, risk: 25 }
+                ]
+            },
+            {
+                tissue: "Breast Carcinoma",
+                stage: "IV",
+                mutations: "HER2+, PIK3CA",
+                metabolism: { glucose: 90, oxygen: 35, lactate: 75 },
+                cscPercentage: 25,
+                hallmarks: [
+                    { name: "Sustaining Proliferative Signaling", severity: 5, id: "proliferation", type: "core" },
+                    { name: "Evading Growth Suppressors", severity: 4, id: "growth_suppressors", type: "core" },
+                    { name: "Resisting Cell Death", severity: 3, id: "apoptosis", type: "core" },
+                    { name: "Enabling Replicative Immortality", severity: 4, id: "immortality", type: "core" },
+                    { name: "Inducing Angiogenesis", severity: 3, id: "angiogenesis", type: "core" },
+                    { name: "Activating Invasion & Metastasis", severity: 4, id: "invasion", type: "core" }
+                ],
+                emergingHallmarks: [
+                    { name: "Reprogramming Energy Metabolism", severity: 4, id: "metabolism", type: "emerging" },
+                    { name: "Evading Immune Destruction", severity: 3, id: "immune_evasion", type: "emerging" }
+                ],
+                enablingCharacteristics: [
+                    { name: "Genome Instability & Mutation", severity: 3, id: "genome_instability", type: "enabling" },
+                    { name: "Tumor-Promoting Inflammation", severity: 4, id: "inflammation", type: "enabling" }
+                ],
+                microenvironment: {
+                    cafs: 60,
+                    tams: 45,
+                    pericytes: 35,
+                    tcells: 15,
+                    ecm: 70
+                },
+                metastases: [
+                    { site: "Bone", status: "active", burden: 35, risk: 80 },
+                    { site: "Liver", status: "developing", burden: 20, risk: 75 },
+                    { site: "Lung", status: "clear", burden: 0, risk: 60 },
+                    { site: "Brain", status: "clear", burden: 0, risk: 40 },
+                    { site: "Lymph Nodes", status: "active", burden: 45, risk: 90 },
+                    { site: "Skin", status: "clear", burden: 0, risk: 30 }
+                ]
+            },
+            {
+                tissue: "Colorectal Carcinoma",
+                stage: "IIIA",
+                mutations: "APC, PIK3CA, TP53",
+                metabolism: { glucose: 80, oxygen: 50, lactate: 55 },
+                cscPercentage: 20,
+                hallmarks: [
+                    { name: "Sustaining Proliferative Signaling", severity: 4, id: "proliferation", type: "core" },
+                    { name: "Evading Growth Suppressors", severity: 5, id: "growth_suppressors", type: "core" },
+                    { name: "Resisting Cell Death", severity: 3, id: "apoptosis", type: "core" },
+                    { name: "Enabling Replicative Immortality", severity: 2, id: "immortality", type: "core" },
+                    { name: "Inducing Angiogenesis", severity: 3, id: "angiogenesis", type: "core" },
+                    { name: "Activating Invasion & Metastasis", severity: 3, id: "invasion", type: "core" }
+                ],
+                emergingHallmarks: [
+                    { name: "Reprogramming Energy Metabolism", severity: 3, id: "metabolism", type: "emerging" },
+                    { name: "Evading Immune Destruction", severity: 4, id: "immune_evasion", type: "emerging" }
+                ],
+                enablingCharacteristics: [
+                    { name: "Genome Instability & Mutation", severity: 5, id: "genome_instability", type: "enabling" },
+                    { name: "Tumor-Promoting Inflammation", severity: 4, id: "inflammation", type: "enabling" }
+                ],
+                microenvironment: {
+                    cafs: 35,
+                    tams: 50,
+                    pericytes: 30,
+                    tcells: 25,
+                    ecm: 55
+                },
+                metastases: [
+                    { site: "Liver", status: "developing", burden: 25, risk: 85 },
+                    { site: "Peritoneum", status: "clear", burden: 0, risk: 70 },
+                    { site: "Lung", status: "clear", burden: 0, risk: 45 },
+                    { site: "Lymph Nodes", status: "active", burden: 40, risk: 95 },
+                    { site: "Ovary", status: "clear", burden: 0, risk: 35 },
+                    { site: "Bone", status: "clear", burden: 0, risk: 20 }
+                ]
+            }
+        ];
+
+        // Enhanced drug library with comprehensive targeting
+        const drugs = [
+            // Core hallmark targeting drugs
+            {
+                name: "Pembrolizumab",
+                class: "Checkpoint Inhibitor",
+                target: "PD-1",
+                hallmark: "immune_evasion",
+                mechanism: "Restores T-cell mediated tumor killing",
+                resistance: ["Microsatellite stability", "Low mutation burden"]
+            },
+            {
+                name: "Nivolumab",
+                class: "Checkpoint Inhibitor", 
+                target: "PD-1",
+                hallmark: "immune_evasion",
+                mechanism: "Blocks immune checkpoint signaling",
+                resistance: ["Tumor antigen loss", "IFN-γ pathway defects"]
+            },
+            {
+                name: "Bevacizumab",
+                class: "Anti-angiogenic",
+                target: "VEGF",
+                hallmark: "angiogenesis",
+                mechanism: "Inhibits new blood vessel formation",
+                resistance: ["Alternative angiogenic pathways", "Increased invasion"]
+            },
+            {
+                name: "Sotorasib",
+                class: "KRAS Inhibitor",
+                target: "KRAS G12C",
+                hallmark: "proliferation",
+                mechanism: "Targets mutant KRAS signaling",
+                resistance: ["Secondary KRAS mutations", "RTK reactivation"]
+            },
+            {
+                name: "Venetoclax",
+                class: "BH3 Mimetic",
+                target: "BCL-2",
+                hallmark: "apoptosis",
+                mechanism: "Promotes cancer cell death",
+                resistance: ["MCL-1 upregulation", "BCL-XL compensation"]
+            },
+            {
+                name: "Palbociclib",
+                class: "CDK4/6 Inhibitor",
+                target: "Cell Cycle",
+                hallmark: "growth_suppressors",
+                mechanism: "Blocks cell cycle progression",
+                resistance: ["RB1 loss", "Cyclin E1 amplification"]
+            },
+            // Metabolic targeting drugs
+            {
+                name: "2-Deoxyglucose",
+                class: "Glycolysis Inhibitor",
+                target: "Hexokinase",
+                hallmark: "metabolism",
+                mechanism: "Blocks glucose utilization",
+                resistance: ["OXPHOS compensation", "Autophagy activation"]
+            },
+            {
+                name: "Metformin",
+                class: "Metabolic Modulator",
+                target: "Complex I",
+                hallmark: "metabolism",
+                mechanism: "Inhibits mitochondrial respiration",
+                resistance: ["Metabolic reprogramming", "AMPK bypass"]
+            },
+            {
+                name: "Dichloroacetate",
+                class: "PDK Inhibitor",
+                target: "Pyruvate Metabolism",
+                hallmark: "metabolism",
+                mechanism: "Forces oxidative metabolism",
+                resistance: ["PDK upregulation", "Lactate export"]
+            },
+            // Genome stability targeting
+            {
+                name: "Olaparib",
+                class: "PARP Inhibitor",
+                target: "DNA Repair",
+                hallmark: "genome_instability",
+                mechanism: "Exploits DNA repair deficiencies",
+                resistance: ["BRCA reversion", "Fork protection"]
+            },
+            {
+                name: "ATR Inhibitor",
+                class: "DNA Damage Response",
+                target: "ATR Kinase",
+                hallmark: "genome_instability",
+                mechanism: "Blocks replication stress response",
+                resistance: ["ATM compensation", "Cell cycle checkpoints"]
+            },
+            // Immortality targeting
+            {
+                name: "Imetelstat",
+                class: "Telomerase Inhibitor",
+                target: "TERT",
+                hallmark: "immortality",
+                mechanism: "Blocks telomere maintenance",
+                resistance: ["ALT pathway", "Senescence bypass"]
+            },
+            // Invasion/metastasis targeting
+            {
+                name: "Salinomycin",
+                class: "EMT Inhibitor",
+                target: "Wnt/β-catenin",
+                hallmark: "invasion",
+                mechanism: "Blocks epithelial-mesenchymal transition",
+                resistance: ["Alternative EMT pathways", "Stem cell plasticity"]
+            },
+            // Microenvironment targeting
+            {
+                name: "Pirfenidone",
+                class: "Anti-fibrotic",
+                target: "TGF-β pathway",
+                hallmark: "inflammation",
+                mechanism: "Reduces CAF activation",
+                resistance: ["Alternative fibrosis pathways", "ECM remodeling"]
+            },
+            {
+                name: "CSF-1R Inhibitor",
+                class: "Macrophage Targeting",
+                target: "CSF-1R",
+                hallmark: "inflammation", 
+                mechanism: "Depletes tumor-associated macrophages",
+                resistance: ["Alternative recruitment", "M2 polarization"]
+            },
+            // Combination drugs
+            {
+                name: "Trastuzumab",
+                class: "HER2 Inhibitor",
+                target: "HER2",
+                hallmark: "proliferation",
+                mechanism: "Blocks HER2 signaling",
+                resistance: ["HER2 mutations", "PI3K activation"]
+            },
+            {
+                name: "Imatinib",
+                class: "Tyrosine Kinase Inhibitor",
+                target: "BCR-ABL",
+                hallmark: "proliferation",
+                mechanism: "Blocks oncogenic kinase",
+                resistance: ["Gatekeeper mutations", "Alternative kinases"]
+            },
+            {
+                name: "Sorafenib", 
+                class: "Multi-kinase Inhibitor",
+                target: "RAF/VEGFR",
+                hallmark: "angiogenesis",
+                mechanism: "Dual angiogenesis/proliferation targeting",
+                resistance: ["Pathway switching", "Metabolic adaptation"]
+            },
+            // Cancer stem cell targeting
+            {
+                name: "Disulfiram",
+                class: "ALDH Inhibitor",
+                target: "Cancer Stem Cells",
+                hallmark: "invasion",
+                mechanism: "Targets cancer stem cell population",
+                resistance: ["Stem cell plasticity", "Alternative stemness markers"]
+            },
+            // Epigenetic drugs
+            {
+                name: "5-Azacytidine",
+                class: "DNMT Inhibitor", 
+                target: "DNA Methylation",
+                hallmark: "growth_suppressors",
+                mechanism: "Reactivates tumor suppressor genes",
+                resistance: ["Alternative silencing", "Drug efflux"]
+            }
+        ];
+
+        function startWorkshop() {
+            document.getElementById('introModal').style.display = 'none';
+            document.getElementById('mainContent').style.display = 'grid';
+            initializeTumor();
+            renderDrugs();
+        }
+
+        function initializeTumor() {
+            // Select random tumor profile
+            gameState.tumorProfile = tumorProfiles[Math.floor(Math.random() * tumorProfiles.length)];
+            
+            // Update basic tumor info
+            document.getElementById('tissueOrigin').textContent = gameState.tumorProfile.tissue;
+            document.getElementById('tumorStage').textContent = gameState.tumorProfile.stage;
+            document.getElementById('keyMutations').textContent = gameState.tumorProfile.mutations;
+            
+            // Update metrics
+            document.getElementById('cscPercentage').textContent = gameState.tumorProfile.cscPercentage;
+            
+            // Update metabolism metrics
+            document.getElementById('glucose').textContent = gameState.tumorProfile.metabolism.glucose;
+            document.getElementById('oxygen').textContent = gameState.tumorProfile.metabolism.oxygen;
+            document.getElementById('lactate').textContent = gameState.tumorProfile.metabolism.lactate;
+            
+            // Update microenvironment metrics
+            document.getElementById('cafs').textContent = gameState.tumorProfile.microenvironment.cafs;
+            document.getElementById('tams').textContent = gameState.tumorProfile.microenvironment.tams;
+            document.getElementById('tcells').textContent = gameState.tumorProfile.microenvironment.tcells;
+            
+            renderHallmarks();
+            renderMetastases();
+        }
+
+        function renderHallmarks() {
+            // Render core hallmarks
+            const coreGrid = document.getElementById('coreHallmarkGrid');
+            coreGrid.innerHTML = '';
+            gameState.tumorProfile.hallmarks.forEach(hallmark => {
+                const item = createHallmarkElement(hallmark, 'core');
+                coreGrid.appendChild(item);
+            });
+            
+            // Render emerging hallmarks
+            const emergingGrid = document.getElementById('emergingHallmarkGrid');
+            emergingGrid.innerHTML = '';
+            if (gameState.tumorProfile.emergingHallmarks) {
+                gameState.tumorProfile.emergingHallmarks.forEach(hallmark => {
+                    const item = createHallmarkElement(hallmark, 'emerging');
+                    emergingGrid.appendChild(item);
+                });
+            }
+            
+            // Render enabling characteristics
+            const enablingGrid = document.getElementById('enablingGrid');
+            enablingGrid.innerHTML = '';
+            if (gameState.tumorProfile.enablingCharacteristics) {
+                gameState.tumorProfile.enablingCharacteristics.forEach(characteristic => {
+                    const item = createHallmarkElement(characteristic, 'enabling');
+                    enablingGrid.appendChild(item);
+                });
+            }
+        }
+        
+        function createHallmarkElement(hallmark, type) {
+            const item = document.createElement('div');
+            let className = `hallmark-item ${type}`;
+            if (hallmark.severity > 0) className += ' active';
+            if (hallmark.suppressed) className += ' suppressed';
+            if (hallmark.emerging) className += ' emerging';
+            if (hallmark.resistance) className += ' resistance';
+            
+            item.className = className;
+            item.innerHTML = `
+                <div class="hallmark-name">${hallmark.name}</div>
+                <div class="hallmark-severity">
+                    ${Array.from({length: 5}, (_, i) => 
+                        `<div class="severity-dot ${i < hallmark.severity ? 'filled' : ''}"></div>`
+                    ).join('')}
+                </div>
+            `;
+            return item;
+        }
+
+        function renderMetastases() {
+            const grid = document.getElementById('metastasisGrid');
+            grid.innerHTML = '';
+            
+            if (!gameState.tumorProfile.metastases) return;
+            
+            gameState.tumorProfile.metastases.forEach(metastasis => {
+                const siteElement = document.createElement('div');
+                siteElement.className = `metastasis-site ${metastasis.status}`;
+                
+                let statusText = '';
+                let burdenText = '';
+                
+                switch (metastasis.status) {
+                    case 'clear':
+                        statusText = 'Clear';
+                        burdenText = `Risk: ${metastasis.risk}%`;
+                        break;
+                    case 'developing':
+                        statusText = 'Developing';
+                        burdenText = `Burden: ${metastasis.burden}% | Risk: ${metastasis.risk}%`;
+                        break;
+                    case 'active':
+                        statusText = 'Active';
+                        burdenText = `Burden: ${metastasis.burden}% | Risk: ${metastasis.risk}%`;
+                        break;
+                }
+                
+                siteElement.innerHTML = `
+                    <div class="site-name">${metastasis.site}</div>
+                    <div class="site-status ${metastasis.status}">${statusText}</div>
+                    <div class="site-burden">${burdenText}</div>
+                `;
+                
+                grid.appendChild(siteElement);
+            });
+        }
+
+        function renderDrugs() {
+            const container = document.getElementById('drugOptions');
+            container.innerHTML = '';
+            
+            // Get all active hallmarks from all categories
+            const allHallmarks = [
+                ...gameState.tumorProfile.hallmarks,
+                ...(gameState.tumorProfile.emergingHallmarks || []),
+                ...(gameState.tumorProfile.enablingCharacteristics || [])
+            ];
+            
+            // Filter drugs based on current round and tumor profile
+            const availableDrugs = drugs.filter(drug => {
+                // In later rounds, show more combination options
+                if (gameState.currentRound > 1) return true;
+                
+                // In round 1, show drugs relevant to active hallmarks
+                return allHallmarks.some(h => h.id === drug.hallmark && h.severity > 0);
+            });
+            
+            availableDrugs.forEach(drug => {
+                const card = document.createElement('div');
+                card.className = 'drug-card';
+                
+                // Check if drug faces resistance
+                const hasResistance = checkDrugResistance(drug);
+                if (hasResistance) {
+                    card.classList.add('resistance-risk');
+                }
+                
+                card.onclick = () => selectDrug(drug);
+                
+                card.innerHTML = `
+                    <div class="drug-name">${drug.name}</div>
+                    <div class="drug-target">Target: ${drug.target}</div>
+                    <div class="drug-class">${drug.class}</div>
+                    <div class="drug-mechanism">${drug.mechanism}</div>
+                    ${hasResistance ? '<div class="resistance-warning">⚠️ Resistance Risk</div>' : ''}
+                `;
+                container.appendChild(card);
+            });
+        }
+        
+        function checkDrugResistance(drug) {
+            // Check if previous treatments have created resistance
+            if (gameState.decisions.length === 0) return false;
+            
+            // Check for pathway redundancy and adaptive resistance
+            const previousDrugs = gameState.decisions.flatMap(d => d.drugs);
+            
+            // If same hallmark was targeted before, higher resistance risk
+            const sameHallmarkTargeted = previousDrugs.some(prevDrug => 
+                prevDrug.hallmark === drug.hallmark
+            );
+            
+            // Check for known resistance mechanisms
+            if (drug.resistance && gameState.currentRound > 1) {
+                return Math.random() < 0.6; // 60% chance of resistance in later rounds
+            }
+            
+            return sameHallmarkTargeted && Math.random() < 0.4;
+        }
+
+        function selectDrug(drug) {
+            const maxDrugs = gameState.currentRound > 1 ? 2 : 1;
+            
+            const drugCards = document.querySelectorAll('.drug-card');
+            const clickedCard = [...drugCards].find(card => 
+                card.querySelector('.drug-name').textContent === drug.name
+            );
+            
+            // If this drug is already selected, deselect it
+            if (clickedCard.classList.contains('selected')) {
+                clickedCard.classList.remove('selected');
+                gameState.selectedDrugs = gameState.selectedDrugs.filter(d => d.name !== drug.name);
+            } else {
+                // If we're at max capacity, clear previous selections first
+                if (gameState.selectedDrugs.length >= maxDrugs) {
+                    // Remove selection from all other cards
+                    drugCards.forEach(card => card.classList.remove('selected'));
+                    gameState.selectedDrugs = [];
+                }
+                
+                // Add new selection
+                clickedCard.classList.add('selected');
+                gameState.selectedDrugs.push(drug);
+            }
+            
+            // Enable submit button if drugs selected and rationale provided
+            checkSubmitEnabled();
+        }
+
+        function checkSubmitEnabled() {
+            const rationaleInput = document.getElementById('rationaleInput');
+            const submitBtn = document.getElementById('submitBtn');
+            
+            if (gameState.selectedDrugs.length > 0 && rationaleInput.value.length > 50) {
+                submitBtn.disabled = false;
+            } else {
+                submitBtn.disabled = true;
+            }
+        }
+
+        document.getElementById('rationaleInput').addEventListener('input', checkSubmitEnabled);
+
+        function submitDecision() {
+            // Store decision
+            gameState.decisions.push({
+                round: gameState.currentRound,
+                drugs: [...gameState.selectedDrugs],
+                rationale: document.getElementById('rationaleInput').value
+            });
+            
+            // Calculate tumor response
+            const response = calculateResponse();
+            displayResponse(response);
+        }
+
+        function calculateResponse() {
+            const response = {
+                type: 'partial',
+                description: '',
+                adaptations: [],
+                resistanceMechanisms: []
+            };
+            
+            // Comprehensive effectiveness calculation including all hallmark types
+            let effectiveness = 0;
+            let resistanceFactors = 0;
+            
+            gameState.selectedDrugs.forEach(drug => {
+                let drugEffectiveness = 0;
+                let drugResistance = 0;
+                
+                // Check core hallmarks
+                const coreHallmark = gameState.tumorProfile.hallmarks.find(h => h.id === drug.hallmark);
+                if (coreHallmark && coreHallmark.severity > 0) {
+                    drugEffectiveness += coreHallmark.severity;
+                    if (coreHallmark.suppressed) drugResistance += 2; // Previously targeted
+                }
+                
+                // Check emerging hallmarks
+                if (gameState.tumorProfile.emergingHallmarks) {
+                    const emergingHallmark = gameState.tumorProfile.emergingHallmarks.find(h => h.id === drug.hallmark);
+                    if (emergingHallmark && emergingHallmark.severity > 0) {
+                        drugEffectiveness += emergingHallmark.severity * 1.2; // Emerging more potent
+                    }
+                }
+                
+                // Check enabling characteristics
+                if (gameState.tumorProfile.enablingCharacteristics) {
+                    const enablingHallmark = gameState.tumorProfile.enablingCharacteristics.find(h => h.id === drug.hallmark);
+                    if (enablingHallmark && enablingHallmark.severity > 0) {
+                        drugEffectiveness += enablingHallmark.severity * 0.8; // Harder to target
+                    }
+                }
+                
+                // Apply resistance mechanisms from previous rounds
+                if (gameState.currentRound > 1) {
+                    const previousDrugs = gameState.decisions.flatMap(d => d.drugs);
+                    const sameTargetUsed = previousDrugs.some(prevDrug => 
+                        prevDrug.target === drug.target || prevDrug.hallmark === drug.hallmark
+                    );
+                    
+                    if (sameTargetUsed) {
+                        drugResistance += 3;
+                        response.resistanceMechanisms.push(`Acquired resistance to ${drug.target} targeting`);
+                    }
+                    
+                    // Pathway switching resistance
+                    if (drug.resistance) {
+                        drugResistance += Math.random() * 2;
+                        response.resistanceMechanisms.push(...drug.resistance.slice(0, 1));
+                    }
+                }
+                
+                // Cancer stem cell resistance
+                if (gameState.tumorProfile.cscPercentage > 20 && drug.hallmark !== 'invasion') {
+                    drugResistance += 1;
+                    response.resistanceMechanisms.push('Cancer stem cell mediated resistance');
+                }
+                
+                // Microenvironment-mediated resistance
+                if (gameState.tumorProfile.microenvironment.cafs > 50 || 
+                    gameState.tumorProfile.microenvironment.tams > 40) {
+                    drugResistance += 1.5;
+                    response.resistanceMechanisms.push('Microenvironment-mediated drug resistance');
+                }
+                
+                effectiveness += Math.max(0, drugEffectiveness - drugResistance);
+                resistanceFactors += drugResistance;
+            });
+            
+            // Determine response based on effectiveness and resistance
+            const netEffectiveness = effectiveness - (resistanceFactors * 0.5);
+            
+            if (netEffectiveness >= 8) {
+                response.type = 'complete';
+                response.description = 'Exceptional response with tumor shrinkage >90%, but vigilance for minimal residual disease required.';
+                response.adaptations = [
+                    'Selection pressure favors rare resistant clones',
+                    'Dormant cancer stem cells may persist',
+                    'Microenvironmental niches provide sanctuary'
+                ];
+            } else if (netEffectiveness >= 5) {
+                response.type = 'partial';
+                response.description = 'Significant tumor shrinkage (30-89%), but adaptive resistance mechanisms emerging.';
+                response.adaptations = [
+                    'Compensatory pathway activation detected',
+                    'Increased heterogeneity in resistant subclones',
+                    'Enhanced DNA repair capacity in surviving cells',
+                    'Metabolic reprogramming to alternative fuel sources'
+                ];
+            } else if (netEffectiveness >= 2) {
+                response.type = 'stable';
+                response.description = 'Disease stabilization achieved, tumor growth controlled but not eliminated.';
+                response.adaptations = [
+                    'Tumor dormancy program activated',
+                    'Balance between cell death and proliferation',
+                    'Chronic inflammatory microenvironment established',
+                    'Selection for slow-cycling resistant cells'
+                ];
+            } else {
+                response.type = 'progressive';
+                response.description = 'Tumor progression despite treatment - resistance mechanisms fully activated.';
+                response.adaptations = [
+                    'Complete pathway redundancy established',
+                    'EMT program drives invasion and metastasis',
+                    'Immune suppression prevents T-cell infiltration',
+                    'Angiogenic switch promotes new vessel formation'
+                ];
+            }
+            
+            // Add round-specific adaptations
+            if (gameState.currentRound === 1) {
+                response.adaptations.unshift('Initial selection pressure applied to tumor population');
+            } else if (gameState.currentRound === 2) {
+                response.adaptations.unshift('Second-line resistance mechanisms activated');
+            } else {
+                response.adaptations.unshift('Multi-drug resistance patterns established');
+            }
+            
+            return response;
+        }
+
+        function displayResponse(response) {
+            const panel = document.getElementById('responsePanel');
+            panel.classList.add('show');
+            
+            const responseType = document.getElementById('responseType');
+            responseType.textContent = response.type === 'complete' ? 'Complete Response' :
+                                      response.type === 'partial' ? 'Partial Response' : 
+                                      response.type === 'stable' ? 'Stable Disease' : 
+                                      'Progressive Disease';
+            responseType.className = `response-type ${response.type}`;
+            
+            document.getElementById('responseDescription').textContent = response.description;
+            
+            const evolutionList = document.getElementById('evolutionList');
+            evolutionList.innerHTML = response.adaptations.map(adaptation => `
+                <div class="evolution-item">
+                    <div class="evolution-description">• ${adaptation}</div>
+                </div>
+            `).join('');
+            
+            // Display resistance mechanisms if any
+            if (response.resistanceMechanisms && response.resistanceMechanisms.length > 0) {
+                const resistanceSection = document.createElement('div');
+                resistanceSection.className = 'resistance-section';
+                resistanceSection.innerHTML = `
+                    <h4 style="color: #e74c3c; margin: 10px 0 5px 0;">Resistance Mechanisms Detected:</h4>
+                    ${[...new Set(response.resistanceMechanisms)].map(mechanism => `
+                        <div class="resistance-item" style="color: #c0392b; font-size: 0.9em; margin: 2px 0;">
+                            ⚠️ ${mechanism}
+                        </div>
+                    `).join('')}
+                `;
+                evolutionList.appendChild(resistanceSection);
+            }
+            
+            // Update tumor metrics
+            updateMetrics(response);
+        }
+
+        function updateMetrics(response) {
+            const burden = document.getElementById('tumorBurden');
+            const metastatic = document.getElementById('metastaticPotential');
+            const immune = document.getElementById('immuneEvasion');
+            
+            if (response.type === 'partial') {
+                burden.textContent = Math.max(20, parseInt(burden.textContent) - 30);
+                metastatic.textContent = Math.min(80, parseInt(metastatic.textContent) + 10);
+            } else if (response.type === 'stable') {
+                metastatic.textContent = Math.min(90, parseInt(metastatic.textContent) + 15);
+                immune.textContent = Math.min(90, parseInt(immune.textContent) + 20);
+            } else {
+                burden.textContent = Math.min(100, parseInt(burden.textContent) + 15);
+                metastatic.textContent = Math.min(95, parseInt(metastatic.textContent) + 25);
+                immune.textContent = Math.min(95, parseInt(immune.textContent) + 30);
+            }
+        }
+
+        function proceedToNextRound() {
+            gameState.currentRound++;
+            
+            if (gameState.currentRound > 3) {
+                showCompletion();
+                return;
+            }
+            
+            // Update round indicator
+            const roundTexts = [
+                'Round 1 of 3: Initial Assessment',
+                'Round 2 of 3: Adaptation Phase',
+                'Round 3 of 3: Advanced Resistance'
+            ];
+            document.getElementById('roundIndicator').textContent = roundTexts[gameState.currentRound - 1];
+            
+            // Reset UI for next round
+            document.getElementById('responsePanel').classList.remove('show');
+            document.getElementById('rationaleInput').value = '';
+            document.getElementById('submitBtn').disabled = true;
+            gameState.selectedDrugs = [];
+            
+            // Evolve tumor based on previous treatment
+            evolveTumor();
+            renderHallmarks();
+            renderMetastases();
+            renderDrugs();
+        }
+
+        function evolveTumor() {
+            const lastDecision = gameState.decisions[gameState.decisions.length - 1];
+            if (!lastDecision) return;
+            
+            // Get all hallmarks across categories for comprehensive evolution
+            const allHallmarks = [
+                ...gameState.tumorProfile.hallmarks,
+                ...(gameState.tumorProfile.emergingHallmarks || []),
+                ...(gameState.tumorProfile.enablingCharacteristics || [])
+            ];
+            
+            if (gameState.currentRound === 2) {
+                // Round 2: Adaptive resistance and compensatory mechanisms
+                lastDecision.drugs.forEach(drug => {
+                    // Suppress targeted hallmarks across all categories
+                    const targetedHallmark = allHallmarks.find(h => h.id === drug.hallmark);
+                    if (targetedHallmark) {
+                        targetedHallmark.severity = Math.max(1, targetedHallmark.severity - 2);
+                        targetedHallmark.suppressed = true;
+                    }
+                    
+                    // Activate compensatory pathways based on specific targets
+                    if (drug.hallmark === 'angiogenesis') {
+                        // Anti-angiogenic therapy leads to invasion
+                        const invasionHallmark = allHallmarks.find(h => h.id === 'invasion');
+                        if (invasionHallmark) {
+                            invasionHallmark.severity = Math.min(5, invasionHallmark.severity + 2);
+                        } else {
+                            gameState.tumorProfile.emergingHallmarks.push({
+                                name: "Activating Invasion & Metastasis",
+                                severity: 3,
+                                id: "invasion"
+                            });
+                        }
+                    }
+                    
+                    if (drug.hallmark === 'proliferation') {
+                        // Target proliferation leads to metabolic adaptation
+                        const metabolismHallmark = allHallmarks.find(h => h.id === 'metabolism');
+                        if (!metabolismHallmark) {
+                            gameState.tumorProfile.emergingHallmarks.push({
+                                name: "Deregulating Cellular Energetics",
+                                severity: 3,
+                                id: "metabolism"
+                            });
+                        }
+                    }
+                });
+                
+                // Increase CSC percentage due to selection pressure
+                gameState.tumorProfile.cscPercentage = Math.min(30, gameState.tumorProfile.cscPercentage + 5);
+                
+                // Enhance microenvironment resistance
+                gameState.tumorProfile.microenvironment.cafs = Math.min(70, gameState.tumorProfile.microenvironment.cafs + 15);
+                gameState.tumorProfile.microenvironment.tams = Math.min(60, gameState.tumorProfile.microenvironment.tams + 10);
+                
+                // Update metabolism to reflect stress response
+                gameState.tumorProfile.metabolism.glucose = Math.min(95, gameState.tumorProfile.metabolism.glucose + 10);
+                gameState.tumorProfile.metabolism.lactate = Math.min(80, gameState.tumorProfile.metabolism.lactate + 15);
+                
+            } else if (gameState.currentRound === 3) {
+                // Round 3: Advanced multi-drug resistance and aggressive phenotype
+                
+                // Strengthen immune evasion regardless of previous targeting
+                const immuneHallmark = allHallmarks.find(h => h.id === 'immune_evasion');
+                if (immuneHallmark) {
+                    immuneHallmark.severity = Math.min(5, immuneHallmark.severity + 2);
+                } else {
+                    gameState.tumorProfile.emergingHallmarks.push({
+                        name: "Avoiding Immune Destruction",
+                        severity: 4,
+                        id: "immune_evasion"
+                    });
+                }
+                
+                // Activate genome instability as enabling characteristic
+                const instabilityHallmark = allHallmarks.find(h => h.id === 'genome_instability');
+                if (instabilityHallmark) {
+                    instabilityHallmark.severity = Math.min(5, instabilityHallmark.severity + 1);
+                } else {
+                    gameState.tumorProfile.enablingCharacteristics.push({
+                        name: "Genome Instability & Mutation",
+                        severity: 3,
+                        id: "genome_instability"
+                    });
+                }
+                
+                // Enhance invasion capabilities
+                const invasionHallmark = allHallmarks.find(h => h.id === 'invasion');
+                if (invasionHallmark) {
+                    invasionHallmark.severity = Math.min(5, invasionHallmark.severity + 1);
+                } else {
+                    gameState.tumorProfile.emergingHallmarks.push({
+                        name: "Activating Invasion & Metastasis",
+                        severity: 4,
+                        id: "invasion"
+                    });
+                }
+                
+                // Maximum CSC enrichment
+                gameState.tumorProfile.cscPercentage = Math.min(40, gameState.tumorProfile.cscPercentage + 10);
+                
+                // Maximal microenvironment support
+                gameState.tumorProfile.microenvironment.cafs = Math.min(80, gameState.tumorProfile.microenvironment.cafs + 10);
+                gameState.tumorProfile.microenvironment.tams = Math.min(70, gameState.tumorProfile.microenvironment.tams + 10);
+                gameState.tumorProfile.microenvironment.tcells = Math.max(5, gameState.tumorProfile.microenvironment.tcells - 10);
+                
+                // Extreme metabolic reprogramming
+                gameState.tumorProfile.metabolism.glucose = 100;
+                gameState.tumorProfile.metabolism.oxygen = Math.max(20, gameState.tumorProfile.metabolism.oxygen - 10);
+                gameState.tumorProfile.metabolism.lactate = Math.min(90, gameState.tumorProfile.metabolism.lactate + 10);
+            }
+            
+            // Evolve metastases based on treatment pressure
+            evolveMetastases();
+            
+            // Update display metrics
+            document.getElementById('cscPercentage').textContent = gameState.tumorProfile.cscPercentage;
+            document.getElementById('glucose').textContent = gameState.tumorProfile.metabolism.glucose;
+            document.getElementById('oxygen').textContent = gameState.tumorProfile.metabolism.oxygen;
+            document.getElementById('lactate').textContent = gameState.tumorProfile.metabolism.lactate;
+            document.getElementById('cafs').textContent = gameState.tumorProfile.microenvironment.cafs;
+            document.getElementById('tams').textContent = gameState.tumorProfile.microenvironment.tams;
+            document.getElementById('tcells').textContent = gameState.tumorProfile.microenvironment.tcells;
+        }
+
+        function evolveMetastases() {
+            if (!gameState.tumorProfile.metastases) return;
+            
+            const invasionLevel = gameState.tumorProfile.hallmarks.find(h => h.id === 'invasion')?.severity || 0;
+            const emergingInvasion = gameState.tumorProfile.emergingHallmarks?.find(h => h.id === 'invasion')?.severity || 0;
+            const totalInvasion = invasionLevel + emergingInvasion;
+            
+            gameState.tumorProfile.metastases.forEach(metastasis => {
+                if (gameState.currentRound === 2) {
+                    // Round 2: Initial metastatic seeding
+                    if (metastasis.status === 'clear' && metastasis.risk > 60) {
+                        if (Math.random() < 0.4) { // 40% chance to start developing
+                            metastasis.status = 'developing';
+                            metastasis.burden = Math.floor(Math.random() * 20) + 10; // 10-30% burden
+                        }
+                    } else if (metastasis.status === 'developing') {
+                        metastasis.burden = Math.min(60, metastasis.burden + Math.floor(Math.random() * 15) + 10);
+                        if (metastasis.burden > 30 && Math.random() < 0.6) {
+                            metastasis.status = 'active';
+                        }
+                    } else if (metastasis.status === 'active') {
+                        metastasis.burden = Math.min(80, metastasis.burden + Math.floor(Math.random() * 10) + 5);
+                    }
+                } else if (gameState.currentRound === 3) {
+                    // Round 3: Aggressive metastatic spread
+                    if (metastasis.status === 'clear' && metastasis.risk > 40) {
+                        if (Math.random() < 0.6) { // 60% chance to start developing
+                            metastasis.status = 'developing';
+                            metastasis.burden = Math.floor(Math.random() * 25) + 15; // 15-40% burden
+                        }
+                    } else if (metastasis.status === 'developing') {
+                        metastasis.burden = Math.min(80, metastasis.burden + Math.floor(Math.random() * 20) + 15);
+                        if (metastasis.burden > 25 && Math.random() < 0.8) {
+                            metastasis.status = 'active';
+                        }
+                    } else if (metastasis.status === 'active') {
+                        metastasis.burden = Math.min(95, metastasis.burden + Math.floor(Math.random() * 15) + 10);
+                    }
+                }
+                
+                // Increase risk based on invasion hallmark strength
+                if (totalInvasion > 3) {
+                    metastasis.risk = Math.min(100, metastasis.risk + (totalInvasion * 5));
+                }
+            });
+        }
+
+        function showCompletion() {
+            document.getElementById('completionScreen').classList.add('show');
+            
+            // Calculate final score
+            let score = 0;
+            gameState.decisions.forEach((decision, index) => {
+                // Points for drug-hallmark matching
+                decision.drugs.forEach(drug => {
+                    if (gameState.tumorProfile.hallmarks.some(h => h.id === drug.hallmark)) {
+                        score += 10;
+                    }
+                });
+                // Points for combination therapy in later rounds
+                if (index > 0 && decision.drugs.length > 1) {
+                    score += 15;
+                }
+                // Points for rationale quality (simplified)
+                if (decision.rationale.length > 100) {
+                    score += 10;
+                }
+            });
+            
+            gameState.score = Math.min(100, score);
+            document.getElementById('finalScore').textContent = gameState.score + '%';
+            
+            // Generate feedback
+            const feedback = generateFeedback();
+            document.getElementById('feedbackSummary').innerHTML = feedback;
+        }
+
+        function generateFeedback() {
+            let feedback = '<h3>Performance Summary</h3><ul>';
+            
+            if (gameState.score >= 80) {
+                feedback += '<li>Excellent understanding of hallmark targeting</li>';
+                feedback += '<li>Strong strategic thinking in combination therapy</li>';
+            } else if (gameState.score >= 60) {
+                feedback += '<li>Good grasp of basic therapeutic principles</li>';
+                feedback += '<li>Consider more attention to resistance mechanisms</li>';
+            } else {
+                feedback += '<li>Review hallmark interdependencies</li>';
+                feedback += '<li>Focus on predicting adaptation patterns</li>';
+            }
+            
+            feedback += '<li>Total decisions made: ' + gameState.decisions.length + '</li>';
+            feedback += '</ul>';
+            
+            feedback += '<h3>Key Learning Points</h3><ul>';
+            feedback += '<li>Tumors adapt through multiple mechanisms simultaneously</li>';
+            feedback += '<li>Single-agent therapy often leads to resistance</li>';
+            feedback += '<li>Microenvironment plays crucial role in resistance</li>';
+            feedback += '</ul>';
+            
+            return feedback;
+        }
+
+        function requestHint() {
+            const hints = [
+                "Consider which hallmarks have the highest severity scores",
+                "Think about potential resistance mechanisms to your selected therapy",
+                "Multiple hallmarks may need simultaneous targeting",
+                "Check if your selected drug matches the tumor's mutations",
+                "Consider the tumor microenvironment's role"
+            ];
+            
+            const selectedHint = hints[Math.floor(Math.random() * hints.length)];
+            
+            // Create hint display
+            const existingHint = document.getElementById('hintDisplay');
+            if (existingHint) {
+                existingHint.remove();
+            }
+            
+            const hintDiv = document.createElement('div');
+            hintDiv.id = 'hintDisplay';
+            hintDiv.style.cssText = `
+                background: #fef5e7;
+                border: 2px solid #f6ad55;
+                border-radius: 10px;
+                padding: 15px;
+                margin: 15px 0;
+                color: #744210;
+                font-weight: bold;
+            `;
+            hintDiv.innerHTML = `💡 <strong>Hint:</strong> ${selectedHint}`;
+            
+            const rationaleSection = document.querySelector('.rationale-section');
+            rationaleSection.insertBefore(hintDiv, rationaleSection.querySelector('.action-buttons'));
+            
+            // Auto-remove hint after 8 seconds
+            setTimeout(() => {
+                if (document.getElementById('hintDisplay')) {
+                    document.getElementById('hintDisplay').remove();
+                }
+            }, 8000);
+        }
+
+        function exportResults() {
+            const results = {
+                timestamp: new Date().toISOString(),
+                score: gameState.score,
+                decisions: gameState.decisions,
+                tumorProfile: gameState.tumorProfile
+            };
+            
+            const blob = new Blob([JSON.stringify(results, null, 2)], {type: 'application/json'});
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'resistance_workshop_results.json';
+            a.click();
+        }
+    </script>
+</body>
+</html>
