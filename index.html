@@ -189,6 +189,7 @@
             margin-bottom: 20px;
             max-height: 400px;
             overflow-y: auto;
+            padding: 5px; /* Add padding to prevent border cutoff */
         }
 
         .drug-card {
@@ -1175,30 +1176,39 @@
         }
 
         function selectDrug(drug) {
+            console.log('Drug selected:', drug.name); // Debug log
             const maxDrugs = gameState.currentRound > 1 ? 2 : 1;
-            
+
             const drugCards = document.querySelectorAll('.drug-card');
-            const clickedCard = [...drugCards].find(card => 
+            const clickedCard = [...drugCards].find(card =>
                 card.querySelector('.drug-name').textContent === drug.name
             );
-            
+
+            if (!clickedCard) {
+                console.error('Could not find drug card for:', drug.name);
+                return;
+            }
+
             // If this drug is already selected, deselect it
             if (clickedCard.classList.contains('selected')) {
                 clickedCard.classList.remove('selected');
                 gameState.selectedDrugs = gameState.selectedDrugs.filter(d => d.name !== drug.name);
+                console.log('Drug deselected. Current selection:', gameState.selectedDrugs);
             } else {
                 // If we're at max capacity, clear previous selections first
                 if (gameState.selectedDrugs.length >= maxDrugs) {
                     // Remove selection from all other cards
                     drugCards.forEach(card => card.classList.remove('selected'));
                     gameState.selectedDrugs = [];
+                    console.log('Cleared previous selections');
                 }
-                
+
                 // Add new selection
                 clickedCard.classList.add('selected');
                 gameState.selectedDrugs.push(drug);
+                console.log('Drug selected. Current selection:', gameState.selectedDrugs);
             }
-            
+
             // Enable submit button if drugs selected and rationale provided
             checkSubmitEnabled();
         }
@@ -1228,16 +1238,28 @@
         document.getElementById('rationaleInput').addEventListener('input', checkSubmitEnabled);
 
         function submitDecision() {
-            // Store decision
-            gameState.decisions.push({
-                round: gameState.currentRound,
-                drugs: [...gameState.selectedDrugs],
-                rationale: document.getElementById('rationaleInput').value
-            });
-            
-            // Calculate tumor response
-            const response = calculateResponse();
-            displayResponse(response);
+            try {
+                console.log('Submit button clicked'); // Debug log
+                console.log('Selected drugs:', gameState.selectedDrugs); // Debug log
+
+                // Store decision
+                gameState.decisions.push({
+                    round: gameState.currentRound,
+                    drugs: [...gameState.selectedDrugs],
+                    rationale: document.getElementById('rationaleInput').value
+                });
+
+                console.log('Decision stored:', gameState.decisions); // Debug log
+
+                // Calculate tumor response
+                const response = calculateResponse();
+                console.log('Response calculated:', response); // Debug log
+
+                displayResponse(response);
+            } catch (error) {
+                console.error('Error in submitDecision:', error);
+                alert('An error occurred. Please check the browser console for details.');
+            }
         }
 
         function calculateResponse() {
