@@ -994,6 +994,7 @@
             document.getElementById('mainContent').style.display = 'grid';
             initializeTumor();
             renderDrugs();
+            checkSubmitEnabled(); // Initialize button state
         }
 
         function initializeTumor() {
@@ -1205,11 +1206,22 @@
         function checkSubmitEnabled() {
             const rationaleInput = document.getElementById('rationaleInput');
             const submitBtn = document.getElementById('submitBtn');
-            
-            if (gameState.selectedDrugs.length > 0 && rationaleInput.value.length > 50) {
+
+            const hasSelectedDrugs = gameState.selectedDrugs.length > 0;
+            const hasRationale = rationaleInput.value.length > 50;
+
+            if (hasSelectedDrugs && hasRationale) {
                 submitBtn.disabled = false;
+                submitBtn.textContent = 'Submit Treatment Decision';
             } else {
                 submitBtn.disabled = true;
+                if (!hasSelectedDrugs && !hasRationale) {
+                    submitBtn.textContent = 'Select drug(s) and explain rationale (50+ chars)';
+                } else if (!hasSelectedDrugs) {
+                    submitBtn.textContent = 'Select at least one drug';
+                } else {
+                    submitBtn.textContent = `Rationale too short (${rationaleInput.value.length}/50 chars)`;
+                }
             }
         }
 
